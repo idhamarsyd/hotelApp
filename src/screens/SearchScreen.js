@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Pressable, View} from 'react-native';
 import CustomText from './../components/CustomText';
 import CustomButton from './../components/CustomButton';
 import CustomDropdown from './../components/CustomDropdown';
@@ -8,8 +8,9 @@ import CityCard from './../components/CityCard';
 import HotelCard from './../components/HotelCard';
 import TabBar from './../components/TabBar/TabBar';
 import {useNavigation} from '@react-navigation/native';
+import {ArrowLeftIcon} from 'react-native-heroicons/solid';
 
-const HomeScreen = () => {
+const SearchScreen = () => {
   const navigation = useNavigation();
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
@@ -17,11 +18,16 @@ const HomeScreen = () => {
         <View style={{backgroundColor: 'white', flex: 1}}>
           {/* Heading */}
           <View style={styles.heading}>
-            <CustomText label="Temukan Hotel!" type="headline" color="black" />
+            <Pressable onPress={() => navigation.goBack()}>
+              <ArrowLeftIcon color="black" size={24} />
+            </Pressable>
+            <View style={{marginLeft: 16}}>
+              <CustomText label="Pencarian" type="headline" color="black" />
+            </View>
           </View>
 
           {/* Form */}
-          <CustomInput placeholder="Country/City" />
+          <CustomInput placeholder="Country/City" value="Singapura" />
           <View style={styles.buttonContainer}>
             <CustomDropdown />
             <CustomButton
@@ -29,46 +35,9 @@ const HomeScreen = () => {
               onPress={() => console.warn('pressed')}
             />
           </View>
-
-          {/* Countries */}
-          <View style={styles.countries}>
-            <View style={styles.heading}>
-              <CustomText
-                label="Kota-kota di Indonesia"
-                type="subheadline"
-                color="black"
-              />
-            </View>
-            <View style={styles.cards}>
-              <ScrollView style={styles.scroll} horizontal={true}>
-                <View style={styles.wrapped}>
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => navigation.push('Booking')}
-                  />
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => console.warn('Prsss')}
-                  />
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => console.warn('Prsss')}
-                  />
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => console.warn('Prsss')}
-                  />
-                </View>
-              </ScrollView>
-            </View>
-          </View>
           <View style={styles.heading}>
             <CustomText
-              label="Destinasi Populer"
+              label="Hasil Pencarian"
               type="subheadline"
               color="black"
             />
@@ -98,6 +67,8 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   heading: {
     // borderWidth: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
     margin: 16,
     // borderColor: 'white',
   },
@@ -119,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default SearchScreen;

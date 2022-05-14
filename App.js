@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import {
   SafeAreaView,
@@ -22,120 +23,142 @@ import {SearchIcon, HeartIcon, UserIcon} from 'react-native-heroicons/outline';
 import HomeScreen from './src/screens/HomeScreen';
 import WishlistScreen from './src/screens/WishlistScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import SearchScreen from './src/screens/SearchScreen';
+import HotelScreen from './src/screens/HotelScreen';
+import BookingScreen from './src/screens/BookingScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import SettingScreen from './src/screens/SettingScreen';
+import {createStackNavigator} from '@react-navigation/stack';
 
-// function HomeScreen() {
-//   return (
-//     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-//       <Text>Home!</Text>
-//     </View>
-//   );
-// }
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-function SettingsScreen() {
+function Search() {
+  // return (
+  // );
+}
+
+function HomeTabs() {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Settings!</Text>
-    </View>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          paddingTop: 8,
+          paddingBottom: 12,
+          backgroundColor: '#0A1931',
+        },
+        tabBarShowLabel: false,
+        headerShown: false,
+      }}>
+      <Tab.Screen
+        name="Home"
+        // component={Search}
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <SearchIcon
+                size={20}
+                color="#FFC947"
+                opacity={focused ? 1 : 0.6}
+              />
+              <Text
+                style={{
+                  fontWeight: '500',
+                  fontSize: 10,
+                  lineHeight: 12,
+                  letterSpacing: -0.2,
+                  color: '#FFC947',
+                  opacity: focused ? 1 : 0.6,
+                }}>
+                Search
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Wishlist"
+        component={WishlistScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <HeartIcon
+                size={20}
+                color="#FFC947"
+                opacity={focused ? 1 : 0.6}
+              />
+              <Text
+                style={{
+                  fontWeight: '500',
+                  fontSize: 10,
+                  lineHeight: 12,
+                  letterSpacing: -0.2,
+                  color: '#FFC947',
+                  opacity: focused ? 1 : 0.6,
+                }}>
+                Wishlist
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <UserIcon size={20} color="#FFC947" opacity={focused ? 1 : 0.6} />
+              <Text
+                style={{
+                  fontWeight: '500',
+                  fontSize: 10,
+                  lineHeight: 12,
+                  letterSpacing: -0.2,
+                  color: '#FFC947',
+                  opacity: focused ? 1 : 0.6,
+                }}>
+                Profile
+              </Text>
+            </View>
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
-const Tab = createBottomTabNavigator();
-
 const App = () => {
   return (
-    // <View style={{flex: 1}}>
-    //   <HomeScreen />
-    // </View>
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: {
-            paddingTop: 8,
-            paddingBottom: 12,
-            backgroundColor: '#0A1931',
-          },
-          tabBarShowLabel: false,
-          headerShown: false,
-        }}>
-        <Tab.Screen
+      <Stack.Navigator>
+        <Stack.Screen
           name="Home"
-          component={HomeScreen}
-          options={{
-            tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                <SearchIcon
-                  size={20}
-                  color="#FFC947"
-                  opacity={focused ? 1 : 0.6}
-                />
-                <Text
-                  style={{
-                    fontWeight: '500',
-                    fontSize: 10,
-                    lineHeight: 12,
-                    letterSpacing: -0.2,
-                    color: '#FFC947',
-                    opacity: focused ? 1 : 0.6,
-                  }}>
-                  Search
-                </Text>
-              </View>
-            ),
-          }}
+          component={HomeTabs}
+          options={{headerShown: false}}
         />
-        <Tab.Screen
-          name="Wishlist"
-          component={WishlistScreen}
-          options={{
-            tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                <HeartIcon
-                  size={20}
-                  color="#FFC947"
-                  opacity={focused ? 1 : 0.6}
-                />
-                <Text
-                  style={{
-                    fontWeight: '500',
-                    fontSize: 10,
-                    lineHeight: 12,
-                    letterSpacing: -0.2,
-                    color: '#FFC947',
-                    opacity: focused ? 1 : 0.6,
-                  }}>
-                  Wishlist
-                </Text>
-              </View>
-            ),
-          }}
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{headerShown: false}}
         />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                <UserIcon
-                  size={20}
-                  color="#FFC947"
-                  opacity={focused ? 1 : 0.6}
-                />
-                <Text
-                  style={{
-                    fontWeight: '500',
-                    fontSize: 10,
-                    lineHeight: 12,
-                    letterSpacing: -0.2,
-                    color: '#FFC947',
-                    opacity: focused ? 1 : 0.6,
-                  }}>
-                  Profile
-                </Text>
-              </View>
-            ),
-          }}
+        <Stack.Screen
+          name="Hotel"
+          component={HotelScreen}
+          options={{headerShown: false}}
         />
-      </Tab.Navigator>
+        <Stack.Screen
+          name="Booking"
+          component={BookingScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Setting"
+          component={SettingScreen}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

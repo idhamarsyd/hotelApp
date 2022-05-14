@@ -4,7 +4,15 @@ import CustomText from '../CustomText';
 import {StarIcon} from 'react-native-heroicons/solid';
 import HeroIcon from '../HeroIcon/HeroIcon';
 
-const HotelCard = ({imageUrl, hotelName, country, rating, onPress, onSave}) => {
+const HotelCard = ({
+  imageUrl,
+  hotelName,
+  country,
+  rating,
+  onPress,
+  onSave,
+  saved = false,
+}) => {
   return (
     <Pressable style={styles.container} onPress={onPress}>
       {/* Hotel Image */}
@@ -16,7 +24,7 @@ const HotelCard = ({imageUrl, hotelName, country, rating, onPress, onSave}) => {
           }}
         />
         <Pressable style={styles.loveIcon} onPress={onSave}>
-          <HeroIcon icon="HeartOutline" />
+          <HeroIcon icon={!saved ? 'HeartOutline' : 'HeartSolid'} />
         </Pressable>
       </View>
       {/* Hotel Info */}
