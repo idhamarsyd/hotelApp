@@ -9,14 +9,6 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import CustomText from './src/components/CustomText';
-import CustomButton from './src/components/CustomButton';
-import CustomDropdown from './src/components/CustomDropdown';
-import CustomInput from './src/components/CustomInput';
-import CityCard from './src/components/CityCard';
-import HotelCard from './src/components/HotelCard';
-import HeroIcon from './src/components/HeroIcon/HeroIcon';
-import TabBar from './src/components/TabBar/TabBar';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {SearchIcon, HeartIcon, UserIcon} from 'react-native-heroicons/outline';
@@ -29,14 +21,12 @@ import BookingScreen from './src/screens/BookingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import {createStackNavigator} from '@react-navigation/stack';
+import {store} from './src/stores/store';
+import {Provider} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-
-function Search() {
-  // return (
-  // );
-}
 
 function HomeTabs() {
   return (
@@ -130,36 +120,45 @@ function HomeTabs() {
 }
 
 const App = () => {
+  // const {isAuth} = useSelector(state => state.user);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeTabs}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Hotel"
-          component={HotelScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Booking"
-          component={BookingScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Setting"
-          component={SettingScreen}
-          options={{headerShown: false}}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="HomeTabs"
+            component={HomeTabs}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Search"
+            component={SearchScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Hotel"
+            component={HotelScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Booking"
+            component={BookingScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Setting"
+            component={SettingScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{headerShown: false}}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 };
 

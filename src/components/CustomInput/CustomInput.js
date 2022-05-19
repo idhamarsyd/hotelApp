@@ -2,13 +2,15 @@ import React from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 import {BeakerIcon} from '@heroicons/react/solid';
 
-const CustomInput = ({placeholder, value}) => {
+const CustomInput = ({placeholder, value, onChangeText, secureTextEntry}) => {
   return (
     <TextInput
       style={styles.input}
       placeholder={placeholder}
       placeholderTextColor="#9DA3AD"
-      value={value}
+      defaultValue={value}
+      onChangeText={onChangeText}
+      secureTextEntry={secureTextEntry}
     />
   );
 };

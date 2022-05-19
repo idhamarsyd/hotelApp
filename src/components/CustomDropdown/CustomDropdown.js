@@ -12,15 +12,14 @@ const CustomDropdown = () => {
   ]);
   return (
     <DropDownPicker
-      placeholder="CURRENCY"
       open={open}
       value={value}
-      items={items}
-      setOpen={setOpen}
       setValue={setValue}
+      items={items}
       setItems={setItems}
-      style={styles.wrapped}
-      containerStyle={styles.container}
+      setOpen={setOpen}
+      style={{borderRadius: 40, borderColor: '#FFF7EF', borderWidth: 2}}
+      containerStyle={{flex: 1, marginHorizontal: 8}}
       textStyle={{
         fontSize: 12,
         lineHeight: 14,

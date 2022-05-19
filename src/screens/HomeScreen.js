@@ -1,23 +1,86 @@
-import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {ScrollView, StyleSheet, Text, View, FlatList} from 'react-native';
 import CustomText from './../components/CustomText';
 import CustomButton from './../components/CustomButton';
-import CustomDropdown from './../components/CustomDropdown';
+// import CustomDropdown from './../components/CustomDropdown';
 import CustomInput from './../components/CustomInput';
 import CityCard from './../components/CityCard';
 import HotelCard from './../components/HotelCard';
 import TabBar from './../components/TabBar/TabBar';
 import {useNavigation} from '@react-navigation/native';
+import DropDownPicker from 'react-native-dropdown-picker';
+import {fetchHotel} from './../stores/hotelReducer';
+import {useSelector, useDispatch} from 'react-redux';
+import axios from 'axios';
 
 const HomeScreen = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [currency, setCurrency] = useState(null);
+  const {isLoading, hotelList, cityList} = useSelector(state => state.hotel);
+
+  useEffect(() => {
+    // dispatch(fetchHotel());
+  }, []);
+
+  const CustomDropdown = () => {
+    const [open, setOpen] = useState(false);
+    const [items, setItems] = useState([
+      {label: 'USD', value: 'usd'},
+      {label: 'IDR', value: 'idr'},
+    ]);
+    return (
+      <DropDownPicker
+        placeholder="CURRENCY"
+        open={open}
+        value={currency}
+        setValue={setCurrency}
+        items={items}
+        setItems={setItems}
+        setOpen={setOpen}
+        style={{borderRadius: 40, borderColor: '#FFF7EF', borderWidth: 2}}
+        containerStyle={{flex: 1, marginHorizontal: 8}}
+        textStyle={{
+          fontSize: 12,
+          lineHeight: 14,
+          letterSpacing: 0.24,
+          fontWeight: '900',
+          color: '#0A1931',
+        }}
+      />
+    );
+  };
+
+  const renderCities = (
+    {item}, //item ini refer ke DATA
+  ) => (
+    <CityCard
+      imageUrl={item.imageUrl}
+      cityName={item.cityName}
+      onPress={() => console.warn('pressed')}
+    />
+  );
+
+  const renderHotels = (
+    {item}, //item ini refer ke DATA
+  ) => (
+    <HotelCard
+      imageUrl={item.optimizedThumbUrls.srpDesktop}
+      hotelName={item.name}
+      country={item.address.countryName}
+      rating={item.starRating}
+      onPress={() => console.warn('Lesgo')}
+      onSave={() => console.warn('Saved!')}
+    />
+  );
+
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
       <ScrollView>
         <View style={{backgroundColor: 'white', flex: 1}}>
           {/* Heading */}
           <View style={styles.heading}>
-            <CustomText label="Temukan Hotel!" type="headline" color="black" />
+            <CustomText label="Temukan Hotel" type="headline" color="black" />
           </View>
 
           {/* Form */}
@@ -42,25 +105,11 @@ const HomeScreen = () => {
             <View style={styles.cards}>
               <ScrollView style={styles.scroll} horizontal={true}>
                 <View style={styles.wrapped}>
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => navigation.push('Booking')}
-                  />
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => console.warn('Prsss')}
-                  />
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => console.warn('Prsss')}
-                  />
-                  <CityCard
-                    imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                    cityName="Bandung"
-                    onPress={() => console.warn('Prsss')}
+                  <FlatList
+                    data={cityList}
+                    horizontal={true}
+                    renderItem={renderCities}
+                    // keyExtractor={item => item.id}
                   />
                 </View>
               </ScrollView>
@@ -73,21 +122,12 @@ const HomeScreen = () => {
               color="black"
             />
           </View>
-          <HotelCard
-            imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-            hotelName="The Grand NYC"
-            country="New York"
-            rating={2}
-            onPress={() => navigation.push('Hotel')}
-            onSave={() => console.warn('Saved!')}
-          />
-          <HotelCard
-            imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-            hotelName="The Grand NYC"
-            country="New York"
-            rating={2}
-            onPress={() => console.warn('Lesgo')}
-            onSave={() => console.warn('Saved!')}
+
+          <FlatList
+            data={hotelList}
+            // horizontal={true}
+            renderItem={renderHotels}
+            // keyExtractor={item => item.id}
           />
         </View>
       </ScrollView>
