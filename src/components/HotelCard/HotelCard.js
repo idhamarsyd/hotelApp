@@ -12,6 +12,8 @@ const HotelCard = ({
   onPress,
   onSave,
   saved = false,
+  hideRatingIcon = false,
+  hideSaveIcon = false,
 }) => {
   return (
     <Pressable style={styles.container} onPress={onPress}>
@@ -23,9 +25,13 @@ const HotelCard = ({
             uri: imageUrl,
           }}
         />
-        <Pressable style={styles.loveIcon} onPress={onSave}>
-          <HeroIcon icon={!saved ? 'HeartOutline' : 'HeartSolid'} />
-        </Pressable>
+        {hideSaveIcon ? (
+          <></>
+        ) : (
+          <Pressable style={styles.loveIcon} onPress={onSave}>
+            <HeroIcon icon={!saved ? 'HeartOutline' : 'HeartSolid'} />
+          </Pressable>
+        )}
       </View>
       {/* Hotel Info */}
       <View style={styles.info}>
@@ -39,10 +45,16 @@ const HotelCard = ({
         </View>
         {/* Hotel Rating */}
         <View style={styles.ratingContainer}>
-          <StarIcon size={16} color="#FFC947" />
-          <View style={styles.rating}>
-            <CustomText label={rating} type="caption" color="#FFC947" />
-          </View>
+          {rating ? (
+            <>
+              {hideRatingIcon ? <></> : <StarIcon size={16} color="#FFC947" />}
+              <View style={styles.rating}>
+                <CustomText label={rating} type="caption" color="#FFC947" />
+              </View>
+            </>
+          ) : (
+            <></>
+          )}
         </View>
       </View>
     </Pressable>
@@ -71,7 +83,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    borderWidth: 2,
+    // borderWidth: 2,
     justifyContent: 'center',
     marginHorizontal: 16,
   },

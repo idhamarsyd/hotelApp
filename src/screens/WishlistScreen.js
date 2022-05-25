@@ -1,9 +1,47 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, FlatList, StyleSheet, ScrollView} from 'react-native';
 import CustomText from '../components/CustomText';
 import HotelCard from '../components/HotelCard';
+import {addWishlist, updateWishlist} from './../stores/wishlistReducer';
+import {useSelector, useDispatch} from 'react-redux';
+import CustomButton from '../components/CustomButton';
+import {useNavigation} from '@react-navigation/native';
 
 const WishlistScreen = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const {wishlist} = useSelector(state => state.wishlist);
+  const {isAuth} = useSelector(state => state.user);
+
+  const savePressed = item => {
+    if (!checkItem(item)) {
+      dispatch(addWishlist(item));
+    } else {
+      const newWishlist = wishlist.filter(el => el.name !== item.name);
+      dispatch(updateWishlist(newWishlist));
+    }
+  };
+
+  const checkItem = query => {
+    const found = wishlist.some(el => el.name === query.name);
+    return found;
+  };
+
+  const renderHotels = (
+    {item}, //item ini refer ke DATA
+  ) => (
+    <HotelCard
+      imageUrl={item.optimizedThumbUrls.srpDesktop}
+      hotelName={item.name}
+      country={item.address.countryName}
+      rating={item.starRating}
+      onPress={() => console.warn('Lesgo')}
+      onSave={() => savePressed(item)}
+      saved={checkItem(item) ? true : false}
+    />
+  );
+
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
       <View style={styles.headline}>
@@ -11,15 +49,21 @@ const WishlistScreen = () => {
       </View>
       <ScrollView>
         <View style={styles.list}>
-          <HotelCard
-            imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-            hotelName="The Grand NYC"
-            country="New York"
-            rating={2}
-            onPress={() => console.warn('Lesgo')}
-            onSave={() => console.warn('Saved!')}
-            saved={true}
-          />
+          {isAuth ? (
+            <FlatList
+              data={wishlist}
+              // horizontal={true}
+              renderItem={renderHotels}
+              // keyExtractor={item => item.id}
+            />
+          ) : (
+            <View style={{height: 40}}>
+              <CustomButton
+                label="MASUK"
+                onPress={() => navigation.push('Login')}
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
     </View>

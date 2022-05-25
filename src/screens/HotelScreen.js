@@ -1,19 +1,62 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Pressable, View, Image} from 'react-native';
 import CustomText from './../components/CustomText';
 import CustomButton from './../components/CustomButton';
-import CustomDropdown from './../components/CustomDropdown';
-import CustomInput from './../components/CustomInput';
-import CityCard from './../components/CityCard';
-import HotelCard from './../components/HotelCard';
-import TabBar from './../components/TabBar/TabBar';
 import {useNavigation} from '@react-navigation/native';
 import {ArrowLeftIcon, StarIcon} from 'react-native-heroicons/solid';
 import HeroIcon from '../components/HeroIcon/HeroIcon';
 import Chip from '../components/Chip/Chip';
+import {getFeatures, setDetail} from './../stores/hotelReducer';
+import {setCurrentBook} from './../stores/bookingReducer';
+import {useSelector, useDispatch} from 'react-redux';
+import {FlatList} from 'react-native-gesture-handler';
+import {addWishlist, updateWishlist} from './../stores/wishlistReducer';
 
-const HotelScreen = ({saved = false, onSave}) => {
+const HotelScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const {hotelDetail, hotelFeatures, isLoading} = useSelector(
+    state => state.hotel,
+  );
+  const {isAuth} = useSelector(state => state.user);
+  const {wishlist} = useSelector(state => state.wishlist);
+
+  useEffect(() => {
+    dispatch(
+      getFeatures(
+        `https://hotels4.p.rapidapi.com/properties/get-details?id=${hotelDetail.id}`,
+      ),
+    );
+  }, [hotelDetail]);
+
+  const checkItem = query => {
+    const found = wishlist.some(el => el.name === query.name);
+    return found;
+  };
+
+  const savePressed = item => {
+    if (isAuth) {
+      if (!checkItem(item)) {
+        dispatch(addWishlist(item));
+      } else {
+        const newWishlist = wishlist.filter(el => el.name !== item.name);
+        dispatch(updateWishlist(newWishlist));
+      }
+    } else {
+      navigation.navigate('Login');
+    }
+  };
+
+  const bookPressed = async item => {
+    if (isAuth) {
+      await dispatch(setCurrentBook(item));
+      navigation.navigate('Booking');
+    } else {
+      navigation.navigate('Login');
+    }
+  };
+
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
       <ScrollView>
@@ -32,88 +75,73 @@ const HotelScreen = ({saved = false, onSave}) => {
             <Image
               style={styles.image}
               source={{
-                uri: 'https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb',
+                uri: hotelDetail.optimizedThumbUrls.srpDesktop,
               }}
             />
-            <Pressable style={styles.loveIcon} onPress={onSave}>
-              <HeroIcon icon={!saved ? 'HeartOutline' : 'HeartSolid'} />
+            <Pressable
+              style={styles.loveIcon}
+              onPress={() => savePressed(hotelDetail)}>
+              <HeroIcon
+                icon={checkItem(hotelDetail) ? 'HeartSolid' : 'HeartOutline'}
+              />
             </Pressable>
           </View>
-          {/* Hotel Info */}
-          <View style={{margin: 16}}>
-            <View style={styles.hotelInfo}>
-              <View style={styles.titleContainer}>
-                <CustomText
-                  label="Refinery Hotel"
-                  type="headline"
-                  color="black"
-                />
-                <View style={styles.ratingContainer}>
-                  <StarIcon size={16} color="#FFC947" />
-                  <View style={styles.rating}>
-                    <CustomText label="2" type="caption" color="#FFC947" />
+
+          {isLoading ? (
+            <CustomText
+              label="Tunggu Sebentar..."
+              type="headline"
+              color="black"
+            />
+          ) : (
+            <>
+              <View style={{margin: 16}}>
+                <View style={styles.hotelInfo}>
+                  <View style={styles.titleContainer}>
+                    <CustomText
+                      label={hotelDetail.name}
+                      type="headline"
+                      color="black"
+                    />
+                  </View>
+                  <View style={styles.ratingContainer}>
+                    <StarIcon size={16} color="#FFC947" />
+                    <View style={styles.rating}>
+                      <CustomText
+                        label={hotelDetail.starRating}
+                        type="caption"
+                        color="#FFC947"
+                      />
+                    </View>
+                  </View>
+                  <View style={{opacity: 0.4}}>
+                    <CustomText
+                      label={`${hotelDetail.address.streetAddress}, ${hotelDetail.address.locality} ${hotelDetail.address.postalCode}, ${hotelDetail.address.countryName}`}
+                      type="body"
+                      color="black"
+                    />
                   </View>
                 </View>
               </View>
-              <View style={{opacity: 0.4}}>
-                <CustomText
-                  label="63 W 38th St, New York, NY, 10018, United States of America"
-                  type="body"
-                  color="black"
-                />
+
+              <View style={{margin: 16}}>
+                <ScrollView style={styles.hotelFeatures} horizontal={true}>
+                  <Chip
+                    label={
+                      hotelFeatures.freebies
+                        ? hotelFeatures.freebies
+                        : 'Tidak ada fasilitas khusus'
+                    }
+                  />
+                </ScrollView>
               </View>
-            </View>
-            <View style={styles.hotelAbout}>
-              <View style={{marginBottom: 8}}>
-                <CustomText label="About" type="caption" color="black" />
-              </View>
-              <CustomText
-                label="Luxury hotel with 2 bars/lounges, near 5th Avenue."
-                type="body"
-                color="black"
-              />
-            </View>
-          </View>
-          <ScrollView style={styles.hotelFeatures} horizontal={true}>
-            <Chip label="FREE WIFI" />
-            <Chip label="FREE WIFI" />
-            <Chip label="FREE WIFI" />
-            <Chip label="FREE WIFI" />
-            <Chip label="FREE WIFI" />
-            <Chip label="FREE WIFI" />
-          </ScrollView>
-          {/* HotelImages */}
-          <ScrollView horizontal={true}>
-            <View style={styles.carouselContainer}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: 'https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb',
-                }}
-              />
-            </View>
-            <View style={styles.carouselContainer}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: 'https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb',
-                }}
-              />
-            </View>
-            <View style={styles.carouselContainer}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: 'https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb',
-                }}
-              />
-            </View>
-          </ScrollView>
+            </>
+          )}
         </View>
         <View style={styles.buttonContainer}>
           <CustomButton
             label="BOOK THIS HOTEL"
-            onPress={() => console.warn('pressed')}
+            onPress={() => bookPressed(hotelDetail)}
           />
         </View>
       </ScrollView>
@@ -159,32 +187,28 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   ratingContainer: {
-    // borderWidth: 2,
     flexDirection: 'row',
     alignSelf: 'flex-start',
     padding: 4,
     borderRadius: 20,
     backgroundColor: '#0A1931',
-    // flex: 1,
-    // alignItems: 'center',
+    marginBottom: 16,
   },
   rating: {
     marginHorizontal: 4,
   },
   titleContainer: {
-    // flex: 1,
-    // borderWidth: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    // justifyContent: 'center',
-    marginBottom: 16,
+    flexDirection: 'column',
+    // height: 64,
+    marginBottom: 8,
   },
   hotelInfo: {
-    marginBottom: 16,
+    flex: 1,
+    marginBottom: 0,
+    // borderWidth: 2,
   },
   hotelFeatures: {
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     flexDirection: 'row',
     marginBottom: 16,
     // borderWidth: 2,

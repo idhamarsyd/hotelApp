@@ -2,7 +2,13 @@ import React from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 import {BeakerIcon} from '@heroicons/react/solid';
 
-const CustomInput = ({placeholder, value, onChangeText, secureTextEntry}) => {
+const CustomInput = ({
+  placeholder,
+  value,
+  onChangeText,
+  secureTextEntry,
+  numericKeyboard = false,
+}) => {
   return (
     <TextInput
       style={styles.input}
@@ -11,6 +17,7 @@ const CustomInput = ({placeholder, value, onChangeText, secureTextEntry}) => {
       defaultValue={value}
       onChangeText={onChangeText}
       secureTextEntry={secureTextEntry}
+      keyboardType={numericKeyboard ? 'numeric' : 'default'}
     />
   );
 };

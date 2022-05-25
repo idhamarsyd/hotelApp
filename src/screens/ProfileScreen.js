@@ -1,11 +1,5 @@
 import React, {useEffect} from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Pressable,
-  BackHandler,
-} from 'react-native';
+import {View, ScrollView, StyleSheet, Pressable, FlatList} from 'react-native';
 import CustomText from '../components/CustomText';
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
@@ -15,24 +9,55 @@ import HotelCard from '../components/HotelCard';
 import {useNavigation} from '@react-navigation/native';
 import LoginScreen from './LoginScreen';
 import {useSelector, useDispatch} from 'react-redux';
+import {addWishlist, updateWishlist} from './../stores/wishlistReducer';
+import {setDetail, setLoading} from './../stores/hotelReducer';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const {fullName, isAuth} = useSelector(state => state.user);
+  const {paymentHistory} = useSelector(state => state.booking);
+  const {wishlist} = useSelector(state => state.wishlist);
 
-  // useEffect(() => {
-  //   function handleBackButton() {
-  //     navigation.pop();
-  //     return true;
-  //   }
+  const checkItem = query => {
+    const found = wishlist.some(el => el.name === query.name);
+    return found;
+  };
 
-  //   const backHandler = BackHandler.addEventListener(
-  //     'hardwareBackPress',
-  //     handleBackButton,
-  //   );
+  const savePressed = item => {
+    if (isAuth) {
+      if (!checkItem(item)) {
+        dispatch(addWishlist(item));
+      } else {
+        const newWishlist = wishlist.filter(el => el.name !== item.name);
+        dispatch(updateWishlist(newWishlist));
+      }
+    } else {
+      navigation.navigate('Login');
+    }
+  };
 
-  //   return () => backHandler.remove();
-  // }, []);
+  const hotelPressed = async item => {
+    await dispatch(setDetail(item));
+    // dispatch(setLoading());
+    navigation.navigate('Hotel');
+  };
+
+  const renderHotels = (
+    {item}, //item ini refer ke DATA
+  ) => (
+    <HotelCard
+      imageUrl={item.hotelImg}
+      hotelName={`$${item.pay}`}
+      country={item.hotelName}
+      rating={`${item.room} ROOM, ${item.night} NIGHT`}
+      hideRatingIcon={true}
+      hideSaveIcon={true}
+      // onPress={() => hotelPressed(item)}
+      // onSave={() => savePressed(item)}
+      // saved={checkItem(item) ? true : false}
+    />
+  );
 
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
@@ -70,23 +95,11 @@ const ProfileScreen = () => {
 
           <ScrollView>
             <View style={styles.list}>
-              <HotelCard
-                imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                hotelName="The Grand NYC"
-                country="New York"
-                rating={2}
-                onPress={() => console.warn('Lesgo')}
-                onSave={() => console.warn('Saved!')}
-                saved={true}
-              />
-              <HotelCard
-                imageUrl="https://c.s-microsoft.com/en-ca/CMSImages/1920_Panel01_PriorityFeature_AIO.jpg?version=84488a58-c07f-6a34-a2f8-6c51a147d7fb"
-                hotelName="The Grand NYC"
-                country="New York"
-                rating={2}
-                onPress={() => console.warn('Lesgo')}
-                onSave={() => console.warn('Saved!')}
-                saved={true}
+              <FlatList
+                data={paymentHistory}
+                // horizontal={true}
+                renderItem={renderHotels}
+                // keyExtractor={item => item.id}
               />
             </View>
           </ScrollView>
@@ -119,14 +132,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 0,
     flexDirection: 'row',
-    // borderWidth: 2,
     alignItems: 'center',
   },
   list: {
     flex: 1,
     flexDirection: 'column',
-    // borderWidth: 2,
-    // alignSelf: 'flex-start',
   },
 });
 
