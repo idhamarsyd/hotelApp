@@ -9,6 +9,10 @@ import CustomButton from '../components/CustomButton';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {useSelector, useDispatch} from 'react-redux';
 import {setBookingHistory, setPaymentHistory} from './../stores/bookingReducer';
+import {
+  formatCurrency,
+  getSupportedCurrencies,
+} from 'react-native-format-currency';
 
 const BookingScreen = () => {
   const navigation = useNavigation();
@@ -22,9 +26,9 @@ const BookingScreen = () => {
 
   const {currentBook} = useSelector(state => state.booking);
 
-  useEffect(() => {
-    console.warn(currentBook);
-  }, []);
+  // useEffect(() => {
+  //   console.warn(currentBook);
+  // }, []);
 
   // var formatter = new Intl.NumberFormat('en-US', {
   //   style: 'currency',
@@ -120,8 +124,6 @@ const BookingScreen = () => {
       pay: room * night * currentBook.ratePlan.price.exactCurrent,
     };
     if (checkForm()) {
-      // console.warn(paymentInfo);
-      // dispatch(setBookingHistory());
       dispatch(setPaymentHistory(paymentInfo));
       navigation.reset({
         index: 0,
@@ -129,6 +131,12 @@ const BookingScreen = () => {
       });
     }
   };
+
+  const [valueFormattedWithSymbol, valueFormattedWithoutSymbol, symbol] =
+    formatCurrency({
+      amount: sum(),
+      code: 'USD',
+    });
 
   return (
     <View
@@ -183,7 +191,11 @@ const BookingScreen = () => {
           <View style={{opacity: 0.4}}>
             <CustomText label="Total Price" type="Caption" color="black" />
           </View>
-          <CustomText label={`$ ${sum()}`} type="headline" color="black" />
+          <CustomText
+            label={valueFormattedWithSymbol}
+            type="headline"
+            color="black"
+          />
         </View>
         <View style={styles.buttonContainer}>
           <CustomButton label="BOOK NOW" onPress={() => bookNowPressed()} />
@@ -195,11 +207,9 @@ const BookingScreen = () => {
 
 const styles = StyleSheet.create({
   heading: {
-    // borderWidth: 2,
     flexDirection: 'row',
     alignItems: 'center',
     margin: 16,
-    // borderColor: 'white',
   },
   formContainer: {
     // borderWidth: 2,
@@ -207,15 +217,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 0,
     flexDirection: 'row',
-    // borderWidth: 2,
     alignItems: 'center',
   },
   action: {
     marginVertical: 40,
-    // borderWidth: 2,
-    // position: 'absolute',
-    // bottom: 0,
-    // flex: 0,
   },
   price: {
     flexDirection: 'row',

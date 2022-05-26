@@ -6,6 +6,7 @@ import {addWishlist, updateWishlist} from './../stores/wishlistReducer';
 import {useSelector, useDispatch} from 'react-redux';
 import CustomButton from '../components/CustomButton';
 import {useNavigation} from '@react-navigation/native';
+import {getFeatures, setDetail} from './../stores/hotelReducer';
 
 const WishlistScreen = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ const WishlistScreen = () => {
 
   const {wishlist} = useSelector(state => state.wishlist);
   const {isAuth} = useSelector(state => state.user);
+  const {isLoading} = useSelector(state => state.hotel);
 
   const savePressed = item => {
     if (!checkItem(item)) {
@@ -36,36 +38,60 @@ const WishlistScreen = () => {
       hotelName={item.name}
       country={item.address.countryName}
       rating={item.starRating}
-      onPress={() => console.warn('Lesgo')}
+      onPress={() => hotelPressed(item)}
       onSave={() => savePressed(item)}
       saved={checkItem(item) ? true : false}
     />
   );
 
+  const hotelPressed = async item => {
+    await dispatch(
+      getFeatures(
+        `https://hotels4.p.rapidapi.com/properties/get-details?id=${item.id}`,
+      ),
+    );
+    await dispatch(setDetail(item));
+    navigation.navigate('Hotel');
+  };
+
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
-      <View style={styles.headline}>
-        <CustomText label="Wishlist" type="headline" color="black" />
-      </View>
-      <ScrollView>
-        <View style={styles.list}>
-          {isAuth ? (
-            <FlatList
-              data={wishlist}
-              // horizontal={true}
-              renderItem={renderHotels}
-              // keyExtractor={item => item.id}
+      {isLoading ? (
+        <>
+          <View style={styles.loading}>
+            <CustomText
+              label="Tunggu sebentar..."
+              type="headline"
+              color="black"
             />
-          ) : (
-            <View style={{height: 40}}>
-              <CustomButton
-                label="MASUK"
-                onPress={() => navigation.push('Login')}
-              />
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={styles.headline}>
+            <CustomText label="Wishlist" type="headline" color="black" />
+          </View>
+          <ScrollView>
+            <View style={styles.list}>
+              {isAuth ? (
+                <FlatList
+                  data={wishlist}
+                  // horizontal={true}
+                  renderItem={renderHotels}
+                  // keyExtractor={item => item.id}
+                />
+              ) : (
+                <View style={{height: 40}}>
+                  <CustomButton
+                    label="MASUK"
+                    onPress={() => navigation.push('Login')}
+                  />
+                </View>
+              )}
             </View>
-          )}
-        </View>
-      </ScrollView>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 };
@@ -77,8 +103,13 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     flexDirection: 'column',
-    // borderWidth: 2,
-    // alignSelf: 'flex-start',
+  },
+  loading: {
+    flex: 1,
+    margin: 16,
+    marginVertical: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

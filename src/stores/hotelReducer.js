@@ -31,7 +31,7 @@ export const searchHotel = createAsyncThunk('hotel/searchHotel', async url => {
       },
     });
     const formatRes = await res.data.suggestions[1].entities;
-    console.warn(formatRes);
+    // console.warn(formatRes);
     return formatRes;
   } catch (error) {
     console.warn(error);
@@ -50,7 +50,7 @@ export const getFeatures = createAsyncThunk('hotel/getFeatures', async url => {
       },
     });
     const formatRes = await res.data.data.body.propertyDescription;
-    console.warn(formatRes);
+    // console.warn(formatRes);
     return formatRes;
   } catch (error) {
     console.warn(error);
@@ -106,7 +106,7 @@ export const hotelSlice = createSlice({
     isLoading: false,
     searchQuery: {
       city: null,
-      currency: null,
+      currency: 'usd',
     },
   },
   reducers: {

@@ -11,6 +11,10 @@ import LoginScreen from './LoginScreen';
 import {useSelector, useDispatch} from 'react-redux';
 import {addWishlist, updateWishlist} from './../stores/wishlistReducer';
 import {setDetail, setLoading} from './../stores/hotelReducer';
+import {
+  formatCurrency,
+  getSupportedCurrencies,
+} from 'react-native-format-currency';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -58,6 +62,12 @@ const ProfileScreen = () => {
       // saved={checkItem(item) ? true : false}
     />
   );
+
+  // const [valueFormattedWithSymbol, valueFormattedWithoutSymbol, symbol] =
+  //   formatCurrency({
+  //     amount: sum(),
+  //     code: 'USD',
+  //   });
 
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>

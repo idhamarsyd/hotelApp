@@ -21,7 +21,7 @@ const SettingScreen = () => {
   const {fullName, email, gender} = useSelector(state => state.user);
 
   const updatePressed = async () => {
-    console.warn('Update');
+    // console.warn('Update');
     const userInfo = {
       fullName: nameInput !== '' ? nameInput : fullName,
       email: emailInput !== '' ? emailInput : email,
@@ -29,6 +29,10 @@ const SettingScreen = () => {
     };
     // console.warn(userInfo);
     await dispatch(userInfoUpdate(userInfo));
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'HomeTabs'}],
+    });
   };
 
   const logoutPressed = async () => {

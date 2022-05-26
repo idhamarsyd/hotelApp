@@ -3479,6 +3479,11 @@
   "resolved" "https://registry.npmjs.org/csstype/-/csstype-3.1.0.tgz"
   "version" "3.1.0"
 
+"currency.js@^2.0.4":
+  "integrity" "sha512-6/OplJYgJ0RUlli74d93HJ/OsKVBi8lB1+Z6eJYS1YZzBuIp4qKKHpJ7ad+GvTlWmLR/hLJOWTykN5Nm8NJ7+w=="
+  "resolved" "https://registry.npmjs.org/currency.js/-/currency.js-2.0.4.tgz"
+  "version" "2.0.4"
+
 "dag-map@~1.0.0":
   "integrity" "sha1-6DefBBAA7VYfxRVHXB7SyF7s6Nc="
   "resolved" "https://registry.npmjs.org/dag-map/-/dag-map-1.0.2.tgz"
@@ -7632,6 +7637,11 @@
   "integrity" "sha512-cZBPyN+k52jA9XguFnKoF5tLf31z6gjZ8GijO/pfVNSSEtPwZ14UTUrr87JiiOnMh5K/O2kRzZ/jZN8D0MmUMA=="
   "resolved" "https://registry.npmjs.org/react-native-dropdown-picker/-/react-native-dropdown-picker-5.4.2.tgz"
   "version" "5.4.2"
+
+"react-native-format-currency@^0.0.1":
+  "integrity" "sha512-brmNUhQ5To0uV+Ff/d/bLYcwXN9toy9yqUG0ceO1ZLX+iwRrKdrfxX08eufUz08xp7Smjy46IiTXdLFQt52I+Q=="
+  "resolved" "https://registry.npmjs.org/react-native-format-currency/-/react-native-format-currency-0.0.1.tgz"
+  "version" "0.0.1"
 
 "react-native-gesture-handler@^2.4.2", "react-native-gesture-handler@>= 1.0.0":
   "integrity" "sha512-K3oMiQV7NOVB5RvNlxkyJxU1Gn6m1cYu53MoFA542FVDSTR491d1eQkWDdqy4lW52rfF7IK7eE1LCi+kTJx7jw=="

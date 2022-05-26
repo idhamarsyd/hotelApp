@@ -11,6 +11,10 @@ import {setCurrentBook} from './../stores/bookingReducer';
 import {useSelector, useDispatch} from 'react-redux';
 import {FlatList} from 'react-native-gesture-handler';
 import {addWishlist, updateWishlist} from './../stores/wishlistReducer';
+import {
+  formatCurrency,
+  getSupportedCurrencies,
+} from 'react-native-format-currency';
 
 const HotelScreen = () => {
   const navigation = useNavigation();
@@ -21,14 +25,6 @@ const HotelScreen = () => {
   );
   const {isAuth} = useSelector(state => state.user);
   const {wishlist} = useSelector(state => state.wishlist);
-
-  useEffect(() => {
-    dispatch(
-      getFeatures(
-        `https://hotels4.p.rapidapi.com/properties/get-details?id=${hotelDetail.id}`,
-      ),
-    );
-  }, [hotelDetail]);
 
   const checkItem = query => {
     const found = wishlist.some(el => el.name === query.name);
@@ -49,13 +45,31 @@ const HotelScreen = () => {
   };
 
   const bookPressed = async item => {
+    const readyBook = {
+      ...item,
+      ratePlan: {
+        price: {
+          exactCurrent: item.ratePlan.price.exactCurrent
+            ? item.ratePlan.price.exactCurrent
+            : Object.values(hotelFeatures.featuredPrice.currentPrice)[1],
+        },
+      },
+    };
     if (isAuth) {
-      await dispatch(setCurrentBook(item));
+      await dispatch(setCurrentBook(readyBook));
       navigation.navigate('Booking');
     } else {
       navigation.navigate('Login');
     }
   };
+
+  const [valueFormattedWithSymbol, valueFormattedWithoutSymbol, symbol] =
+    formatCurrency({
+      amount: hotelDetail.ratePlan.price.exactCurrent
+        ? hotelDetail.ratePlan.price.exactCurrent
+        : Object.values(hotelFeatures.featuredPrice.currentPrice)[1],
+      code: 'USD',
+    });
 
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
@@ -78,13 +92,17 @@ const HotelScreen = () => {
                 uri: hotelDetail.optimizedThumbUrls.srpDesktop,
               }}
             />
-            <Pressable
-              style={styles.loveIcon}
-              onPress={() => savePressed(hotelDetail)}>
-              <HeroIcon
-                icon={checkItem(hotelDetail) ? 'HeartSolid' : 'HeartOutline'}
-              />
-            </Pressable>
+            {hotelDetail.ratePlan.price.exactCurrent ? (
+              <Pressable
+                style={styles.loveIcon}
+                onPress={() => savePressed(hotelDetail)}>
+                <HeroIcon
+                  icon={checkItem(hotelDetail) ? 'HeartSolid' : 'HeartOutline'}
+                />
+              </Pressable>
+            ) : (
+              <></>
+            )}
           </View>
 
           {isLoading ? (
@@ -99,7 +117,7 @@ const HotelScreen = () => {
                 <View style={styles.hotelInfo}>
                   <View style={styles.titleContainer}>
                     <CustomText
-                      label={hotelDetail.name}
+                      label={hotelFeatures.name}
                       type="headline"
                       color="black"
                     />
@@ -108,7 +126,7 @@ const HotelScreen = () => {
                     <StarIcon size={16} color="#FFC947" />
                     <View style={styles.rating}>
                       <CustomText
-                        label={hotelDetail.starRating}
+                        label={hotelFeatures.starRating}
                         type="caption"
                         color="#FFC947"
                       />
@@ -116,11 +134,31 @@ const HotelScreen = () => {
                   </View>
                   <View style={{opacity: 0.4}}>
                     <CustomText
-                      label={`${hotelDetail.address.streetAddress}, ${hotelDetail.address.locality} ${hotelDetail.address.postalCode}, ${hotelDetail.address.countryName}`}
+                      label={`${hotelFeatures.address.addressLine1}, ${hotelFeatures.address.cityName}, ${hotelFeatures.address.countryName}`}
                       type="body"
                       color="black"
                     />
                   </View>
+                </View>
+                <View
+                  style={{
+                    marginVertical: 32,
+                    flexDirection: 'row',
+                    flex: 1,
+                    justifyContent: 'space-between',
+                  }}>
+                  <View style={{opacity: 0.4}}>
+                    <CustomText
+                      label="Price per night"
+                      type="body"
+                      color="black"
+                    />
+                  </View>
+                  <CustomText
+                    label={valueFormattedWithSymbol}
+                    type="subheadline"
+                    color="black"
+                  />
                 </View>
               </View>
 
@@ -151,11 +189,9 @@ const HotelScreen = () => {
 
 const styles = StyleSheet.create({
   heading: {
-    // borderWidth: 2,
     flexDirection: 'row',
     alignItems: 'center',
     margin: 16,
-    // borderColor: 'white',
   },
   image: {
     width: '100%',
@@ -164,23 +200,16 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1,
     height: 128,
-    // borderWidth: 2,
-    // width: '50%',
-    // height: '100%',
   },
   buttonContainer: {
     flex: 0,
     padding: 16,
     backgroundColor: 'transparent',
     flexDirection: 'row',
-    // borderWidth: 2,
     bottom: 0,
     alignItems: 'center',
-    // position: 'absolute',
   },
   loveIcon: {
-    // borderWidth: 2,
-    // borderColor: 'white',
     alignSelf: 'flex-start',
     position: 'absolute',
     right: 0,
@@ -199,23 +228,17 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: 'column',
-    // height: 64,
     marginBottom: 8,
   },
   hotelInfo: {
     flex: 1,
     marginBottom: 0,
-    // borderWidth: 2,
   },
   hotelFeatures: {
-    // paddingHorizontal: 16,
     flexDirection: 'row',
     marginBottom: 16,
-    // borderWidth: 2,
-    // overflow: 'visible',
   },
   carouselContainer: {
-    // borderWidth: 2,
     height: 128,
     flexDirection: 'row',
     width: 172,
